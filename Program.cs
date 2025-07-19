@@ -3,31 +3,35 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// إضافة خدمات الـ Controllers
 builder.Services.AddControllers();
 
+// ربط قاعدة البيانات
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// إضافة أدوات Swagger لتوثيق الـ API
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+// تمكين Swagger في جميع البيئات (ليست فقط Development)
+app.UseSwagger();
+app.UseSwaggerUI();
 
+// توجيه الطلبات لـ HTTPS
 app.UseHttpsRedirection();
+
+// تفعيل التفويض (Authorization)
 app.UseAuthorization();
 
+// ربط الـ Controllers بالمسارات
 app.MapControllers();
 
-// ⬅️ السطر المهم لـ Railway
+// ❗ هذا السطر مهم لتحديد منفذ التشغيل بشكل ديناميكي في Railway
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 app.Urls.Add($"http://*:{port}");
 
+// تشغيل التطبيق
 app.Run();
