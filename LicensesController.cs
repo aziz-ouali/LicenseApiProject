@@ -1,7 +1,8 @@
-﻿using LicenseApiProject.Data;
+using LicenseApiProject.Data;
 using LicenseApiProject.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using BCrypt.Net;  // إضافة المكتبة
 
 namespace LicenseApiProject.Controllers
 {
@@ -42,15 +43,28 @@ namespace LicenseApiProject.Controllers
 
             if (user == null)
             {
-                // إنشاء مستخدم جديد
+                // إنشاء مستخدم جديد مع تشفير كلمة المرور
                 user = new User
                 {
                     Username = request.Username,
-                    PasswordHash = request.Password, // يمكن تحسين لاحقاً بتشفير/هاش
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password), // تشفير كلمة المرور
                     PhoneNumber = request.PhoneNumber
                 };
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
+            }
+            else
+            {
+                // لو المستخدم موجود يمكن التحقق من كلمة المرور (اختياري)
+                bool validPassword = BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash);
+                if (!validPassword)
+                {
+                    return BadRequest(new LicenseResponse
+                    {
+                        Success = false,
+                        Message = "كلمة المرور غير صحيحة."
+                    });
+                }
             }
 
             // 2. تحقق من وجود الجهاز
