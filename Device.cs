@@ -1,12 +1,14 @@
-﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace LicenseApiProject.Models
 {
     public class Device
     {
         public int DeviceID { get; set; }
+
+        [Required]
         public string DeviceIdentifier { get; set; } = string.Empty;
 
-        public ICollection<License> Licenses { get; set; } = new List<License>();
+        public virtual ICollection<License> Licenses { get; set; } = new List<License>();
     }
 }
