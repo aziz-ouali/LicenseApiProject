@@ -1,6 +1,77 @@
-@LicenseApiProject_HostAddress = http://localhost:5022
+@LicenseApiProject_HostAddress = https://licenseapiproject-licenseapiproject.up.railway.app
 
+### [اختبار الاتصال]
 GET {{LicenseApiProject_HostAddress}}/weatherforecast/
 Accept: application/json
 
-###
+### [جلب جميع التراخيص]
+GET {{LicenseApiProject_HostAddress}}/api/license
+Accept: application/json
+
+### [جلب ترخيص واحد بواسطة ID]
+GET {{LicenseApiProject_HostAddress}}/api/license/1
+Accept: application/json
+
+### [إضافة ترخيص جديد]
+POST {{LicenseApiProject_HostAddress}}/api/license
+Content-Type: application/json
+
+{
+  "name": "License A",
+  "description": "License for project X",
+  "issuedDate": "2025-01-01",
+  "expiryDate": "2026-01-01",
+  "userId": 1
+}
+
+### [تحديث ترخيص موجود]
+PUT {{LicenseApiProject_HostAddress}}/api/license/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "License A Updated",
+  "description": "Updated description",
+  "issuedDate": "2025-01-01",
+  "expiryDate": "2026-12-31",
+  "userId": 1
+}
+
+### [حذف ترخيص]
+DELETE {{LicenseApiProject_HostAddress}}/api/license/1
+Accept: application/json
+
+---
+
+### [جلب جميع المستخدمين]
+GET {{LicenseApiProject_HostAddress}}/api/user
+Accept: application/json
+
+### [جلب مستخدم واحد]
+GET {{LicenseApiProject_HostAddress}}/api/user/1
+Accept: application/json
+
+### [إضافة مستخدم جديد]
+POST {{LicenseApiProject_HostAddress}}/api/user
+Content-Type: application/json
+
+{
+  "username": "aziz",
+  "email": "aziz@example.com",
+  "password": "hashed_password_here"
+}
+
+### [تحديث مستخدم]
+PUT {{LicenseApiProject_HostAddress}}/api/user/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "username": "aziz_updated",
+  "email": "aziz_updated@example.com",
+  "password": "new_hashed_password"
+}
+
+### [حذف مستخدم]
+DELETE {{LicenseApiProject_HostAddress}}/api/user/1
+Accept: application/json
