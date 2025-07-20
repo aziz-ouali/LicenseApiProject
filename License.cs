@@ -1,4 +1,4 @@
-﻿namespace LicenseApiProject.Models
+namespace LicenseApiProject.Models
 {
     public class License
     {
@@ -8,8 +8,7 @@
         public string LicenseKey { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        // تفادي تحذير nullable reference types
-        public User User { get; set; } = null!;
-        public Device Device { get; set; } = null!;
+        public virtual User User { get; set; } = null!;
+        public virtual Device Device { get; set; } = null!;
     }
 }
