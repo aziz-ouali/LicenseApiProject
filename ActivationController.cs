@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using LicenseApiProject.Data; // أو حسب مكان DbContext
-using LicenseApiProject.Models; // حسب مكان Models
+using LicenseApiProject.Data;
+using LicenseApiProject.Models;
 
 namespace LicenseApiProject.Controllers
 {
@@ -19,12 +19,22 @@ namespace LicenseApiProject.Controllers
         [HttpPost("validate")]
         public async Task<IActionResult> ValidateLicense([FromBody] ValidateLicenseRequest request)
         {
+            if (string.IsNullOrWhiteSpace(request.DeviceId) || string.IsNullOrWhiteSpace(request.ActivationCode))
+            {
+                return BadRequest(new LicenseResponse
+                {
+                    Success = false,
+                    Message = "جميع الحقول مطلوبة."
+                });
+            }
+
             var device = await _context.Devices
+                .AsNoTracking()
                 .FirstOrDefaultAsync(d => d.DeviceIdentifier == request.DeviceId);
 
             if (device == null)
             {
-                return BadRequest(new LicenseResponse
+                return NotFound(new LicenseResponse
                 {
                     Success = false,
                     Message = "الجهاز غير مسجل."
@@ -32,11 +42,12 @@ namespace LicenseApiProject.Controllers
             }
 
             var license = await _context.Licenses
+                .AsNoTracking()
                 .FirstOrDefaultAsync(l => l.DeviceID == device.DeviceID && l.LicenseKey == request.ActivationCode);
 
             if (license == null)
             {
-                return BadRequest(new LicenseResponse
+                return Unauthorized(new LicenseResponse
                 {
                     Success = false,
                     Message = "رمز التفعيل غير صحيح."
@@ -51,14 +62,12 @@ namespace LicenseApiProject.Controllers
         }
     }
 
-    // كلاس الطلب
     public class ValidateLicenseRequest
     {
         public string DeviceId { get; set; } = string.Empty;
         public string ActivationCode { get; set; } = string.Empty;
     }
 
-    // كلاس الرد
     public class LicenseResponse
     {
         public bool Success { get; set; }
